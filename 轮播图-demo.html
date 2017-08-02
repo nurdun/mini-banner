@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="jquery-3.1.1.min.js"></script>
+		<style>
+			*{padding: 0;margin: 0;}
+			a{display: block;text-decoration: none;}
+			.main{width: 500px;height: 245px;margin: 0 auto;border: 1px solid darkgray;position: relative;}
+			img{border: 0;width: 500px;height: 245px;position: absolute;top: 0;}
+			.back{width: 30px;height: 30px;background: url(ppt/arrows.png) no-repeat 0 0;position: absolute;top: 115px;}
+			.forward{width: 30px; height: 30px;background: url(ppt/arrows.png) no-repeat -30px 0;position: absolute;right: 0;top: 115px;}
+			.main .num{width: 250px; height: 25px;position: absolute;bottom: 10px;left: 150px;}
+			.main .num a{width: 25px;height: 25px;border-radius: 25px;margin-left: 10px;font-size: 15px;text-align: center;line-height: 25px;float: left;}
+			.item-selected{background: hotpink;color: black;}
+		</style>
+		
+	</head>
+	<body>
+		<div class="main">
+			<img src="ppt/nemo.jpg"/>
+			<img src="ppt/toystory.jpg"/>
+			<img src="ppt/up.jpg"/>
+			<img src="ppt/walle.jpg"/>
+			<img src="ppt/baby.jpg"/>
+			<img src="ppt/couple.jpg"/>
+			<div class="back"></div>
+			<div class="forward"></div>
+			<div class="num">
+				<a href="javascript:;">1</a>
+				<a href="javascript:;">2</a>
+				<a href="javascript:;">3</a>
+				<a href="javascript:;">4</a>
+				<a href="javascript:;">5</a>
+				<a href="javascript:;">6</a>
+			</div>
+		</div>
+		<script>
+				$(document).ready(function(){
+					var length,
+					currentIndex = 0,//翻到的那一页
+					interval,
+					hasStarted = false,
+					t=5000;
+					length = $("img").length;//4
+					//将除了第一张图隐藏
+					$("img:not(:first)").hide();
+					//将数字1设置为选中并改变其背景颜色和文字颜色
+					$(".num a:first").addClass("item-selected");
+					//隐藏向前向后按钮
+					$(".back,.forward").hide();
+					//绑定hover效果 鼠标放上去的时候 向前向后按钮显示 轮播停止 ； 移开向前向后按钮隐藏 轮播开始
+					$("img,.back,.forward").hover(function(){
+						stop();
+						$(".back,.forward").show();
+					},function(){
+						$(".back,.forward").hide();
+						start();
+					});
+					//绑定数字hover效果 鼠标移上去时停止轮播  
+					$(".num a").hover(function(){
+						stop();
+						var preIndex = $(".num a").filter(".item-selected").index();//自动播放到的位置 从0开始
+						currentIndex = $(this).index();//鼠标移上去时的下标*
+						$(".num a").removeClass("item-selected");
+						$(".num a").eq(currentIndex).addClass("item-selected");
+						//play(preIndex,currentIndex);
+					})
+
+					$(".num a").on("click",function(){
+						//debugger
+						stop();
+						var preIndex = $(".num a").filter(".item-selected").index();//自动播放到的位置 从0开始
+						currentIndex = $(this).index();//鼠标移上去时的下标
+						$(".num a").removeClass("item-selected");
+						$(".num a").eq(currentIndex).addClass("item-selected");
+						// $("img").eq(preIndex).fadeIn(500)
+						// 	.siblings("img").fadeOut(1000);
+						play(preIndex,currentIndex);
+						start();
+					})
+					
+					$(".back").unbind("click");
+					$(".back").bind("click",function(){
+						pre();
+					});
+					
+					$(".forward").unbind("click");
+					$(".forward").bind("click",function(){
+						next();
+					});
+					
+					//back翻页
+					function pre(){
+						var preIndex = currentIndex;
+						currentIdex = (--currentIndex + length)%length;
+						play(preIndex,currentIdex);
+					}
+					
+					//forward
+					function next(){
+						var preIndex = currentIndex;
+						currentIndex = ++currentIndex%length;
+						play(preIndex,currentIndex);
+					}
+					
+					function play(preIndex,currentIndex){
+						//  $("img").eq(preIndex).fadeOut(500)
+						//  		.parent().children().eq(currentIndex).fadeIn(1000);
+						$("img").eq(preIndex).fadeIn(500)
+							.siblings("img").fadeOut(1000);
+						$(".num a").removeClass("item-selected");
+						$(".num a").eq(preIndex).addClass("item-selected");
+					}
+					
+					//开始播
+					function start(){
+						if(!hasStarted){
+							hasStarted = true;//开关
+							interval = setInterval(next,t);
+						}
+					}
+					//停止播
+					function stop(){
+						clearInterval(interval);
+						hasStarted = false;
+					}
+					start();
+				})
+		</script>
+	</body>
+</html>
